@@ -1,14 +1,18 @@
+import pandas as pd
 import matplotlib.pyplot as plt
 from src.data_loader import get_prices
-from src.engine import buy_and_hold
+from src.engine import buy_and_hold, run_backtest
+from src.strategies import MovingAverageCrossover
 
 df = get_prices("AAPL", "2015-01-01", "2025-01-01")
-equity = buy_and_hold(df)
 
-print(f"Start: ${equity.iloc[0]:,.2f}")
-print(f"End:   ${equity.iloc[-1]:,.2f}")
-print(f"Portfolio growth: {equity.iloc[-1] / equity.iloc[0]:.2f}x")
-print(f"Stock growth:     {df['Close'].iloc[-1] / df['Close'].iloc[0]:.2f}x")
+results = [
+    buy_and_hold(df),
+    run_backtest(df, MovingAverageCrossover(50, 200)),
+]
 
-equity.plot(title="AAPL Buy and Hold", ylabel="Portfolio Value ($)")
+for equity in results:
+    print(f"{equity.name:<25} ${equity.iloc[-1]:,.2f}")
+
+pd.concat(results, axis=1).plot(title="AAPL Strategy Comparison", ylabel="Portfolio Value ($)")
 plt.show()
