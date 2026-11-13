@@ -1,14 +1,16 @@
 import pandas as pd
 
-def buy_and_hold(prices, starting_cash=10_000):
+def buy_and_hold(prices, starting_cash=10_000, fee_rate=0.0):
     first_price = prices["Close"].iloc[0]
+    cost_per_share = first_price * (1 + fee_rate)
 
-    shares = starting_cash // first_price
-    leftover_cash = starting_cash - shares * first_price
+    shares = starting_cash // cost_per_share
+    leftover_cash = starting_cash - shares * cost_per_share
 
     portfolio_value = shares * prices["Close"] + leftover_cash
     portfolio_value.name = "Buy and Hold"
     portfolio_value.attrs["trades"] = 1
+
     return portfolio_value
 
 
